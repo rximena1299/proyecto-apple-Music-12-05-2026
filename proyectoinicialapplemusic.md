@@ -1,46 +1,180 @@
 Primero te presento las entidades con sus atributos, luego genero el script SQL.
 
-🎵 Proyecto: Base de Datos Apple Music
-Entidades y Atributos
+---
 
-1. USUARIO
-AtributoTipoRestricciónusuario_idINTPK, AUTO_INCREMENTnombreVARCHAR(100)NOT NULLapellidoVARCHAR(100)NOT NULLemailVARCHAR(150)UNIQUE, NOT NULLfecha_nacimientoDATENOT NULLpaisVARCHAR(60)NOT NULLfecha_registroDATETIMEDEFAULT NOW()
+## 🎵 Proyecto: Base de Datos Apple Music
 
-2. SUSCRIPCION
-AtributoTipoRestricciónsuscripcion_idINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOtipo_planENUM('Individual','Familiar','Estudiante','Apple One')NOT NULLprecio_mensualDECIMAL(6,2)NOT NULLfecha_inicioDATENOT NULLfecha_finDATENULLestadoENUM('Activa','Cancelada','Suspendida')DEFAULT 'Activa'
+### Entidades y Atributos
 
-3. ARTISTA
-AtributoTipoRestricciónartista_idINTPK, AUTO_INCREMENTnombre_artisticoVARCHAR(150)NOT NULLnombre_realVARCHAR(150)NULLpais_origenVARCHAR(60)NOT NULLfecha_debutDATENULLbiografiaTEXTNULLimagen_urlVARCHAR(255)NULL
+---
 
-4. ALBUM
-AtributoTipoRestricciónalbum_idINTPK, AUTO_INCREMENTartista_idINTFK → ARTISTAtituloVARCHAR(200)NOT NULLfecha_lanzamientoDATENOT NULLgeneroVARCHAR(80)NOT NULLsello_discograficoVARCHAR(100)NULLportada_urlVARCHAR(255)NULLtotal_pistasINTDEFAULT 0
+**1. USUARIO**
 
-5. CANCION
-AtributoTipoRestriccióncancion_idINTPK, AUTO_INCREMENTalbum_idINTFK → ALBUMartista_idINTFK → ARTISTAtituloVARCHAR(200)NOT NULLduracion_segINTNOT NULLnumero_pistaINTNOT NULLletraLONGTEXTNULLexplicitTINYINT(1)DEFAULT 0reproduccionesBIGINTDEFAULT 0
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| usuario_id | INT | PK, AUTO_INCREMENT |
+| nombre | VARCHAR(100) | NOT NULL |
+| apellido | VARCHAR(100) | NOT NULL |
+| email | VARCHAR(150) | UNIQUE, NOT NULL |
+| fecha_nacimiento | DATE | NOT NULL |
+| pais | VARCHAR(60) | NOT NULL |
+| fecha_registro | DATETIME | DEFAULT NOW() |
 
-6. PLAYLIST
-AtributoTipoRestricciónplaylist_idINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOnombreVARCHAR(150)NOT NULLdescripcionTEXTNULLes_publicaTINYINT(1)DEFAULT 0fecha_creacionDATETIMEDEFAULT NOW()portada_urlVARCHAR(255)NULL
+---
 
-7. PLAYLIST_CANCION (tabla intermedia)
-AtributoTipoRestricciónplaylist_idINTPK, FK → PLAYLISTcancion_idINTPK, FK → CANCIONposicionINTNOT NULLfecha_agregadaDATETIMEDEFAULT NOW()
+**2. SUSCRIPCION**
 
-8. REPRODUCCION
-AtributoTipoRestricciónreproduccion_idBIGINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOcancion_idINTFK → CANCIONfecha_horaDATETIMEDEFAULT NOW()duracion_escuchada_segINTNOT NULLdispositivoVARCHAR(80)NULLcompletadaTINYINT(1)DEFAULT 0
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| suscripcion_id | INT | PK, AUTO_INCREMENT |
+| usuario_id | INT | FK → USUARIO |
+| tipo_plan | ENUM('Individual','Familiar','Estudiante','Apple One') | NOT NULL |
+| precio_mensual | DECIMAL(6,2) | NOT NULL |
+| fecha_inicio | DATE | NOT NULL |
+| fecha_fin | DATE | NULL |
+| estado | ENUM('Activa','Cancelada','Suspendida') | DEFAULT 'Activa' |
 
-9. GENERO_MUSICAL
-AtributoTipoRestriccióngenero_idINTPK, AUTO_INCREMENTnombreVARCHAR(80)UNIQUE, NOT NULLdescripcionTEXTNULLgenero_padre_idINTFK → GENERO_MUSICAL (autorreferencia)
+---
 
-10. DISPOSITIVO
-AtributoTipoRestriccióndispositivo_idINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOtipoENUM('iPhone','iPad','Mac','Apple TV','HomePod','Windows','Android')NOT NULLnombre_dispositivoVARCHAR(100)NOT NULLsistema_operativoVARCHAR(80)NULLultimo_accesoDATETIMENULLactivoTINYINT(1)DEFAULT 1
+**3. ARTISTA**
 
-Ahora genero el script SQL:Archivo creado, leyó un archivoArchivo creado, leyó un archivo
-✅ Script generado: bdapplemusic.sql
-El script incluye las 10 entidades con todas sus relaciones, más extras de valor:
-📦 Contenido del script
-SecciónDetalleBase de datosCREATE DATABASE bdapplemusic con charset utf8mb410 tablasCon PK, FK, tipos correctos y comentariosRelacionesON DELETE CASCADE / RESTRICT / SET NULL según la lógica del negocioÍndices9 índices adicionales para optimizar consultas frecuentesDatos de ejemploGéneros, artistas, álbumes, canciones, usuarios, suscripciones, dispositivos, playlists y reproducciones2 vistasv_top_canciones y v_historial_usuario para consultas rápidas
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| artista_id | INT | PK, AUTO_INCREMENT |
+| nombre_artistico | VARCHAR(150) | NOT NULL |
+| nombre_real | VARCHAR(150) | NULL |
+| pais_origen | VARCHAR(60) | NOT NULL |
+| fecha_debut | DATE | NULL |
+| biografia | TEXT | NULL |
+| imagen_url | VARCHAR(255) | NULL |
 
+---
 
-Aquí tienes el **Diagrama ERD completo** de las 10 entidades de Apple Music. Las relaciones representadas son:
+**4. ALBUM**
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| album_id | INT | PK, AUTO_INCREMENT |
+| artista_id | INT | FK → ARTISTA |
+| titulo | VARCHAR(200) | NOT NULL |
+| fecha_lanzamiento | DATE | NOT NULL |
+| genero | VARCHAR(80) | NOT NULL |
+| sello_discografico | VARCHAR(100) | NULL |
+| portada_url | VARCHAR(255) | NULL |
+| total_pistas | INT | DEFAULT 0 |
+
+---
+
+**5. CANCION**
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| cancion_id | INT | PK, AUTO_INCREMENT |
+| album_id | INT | FK → ALBUM |
+| artista_id | INT | FK → ARTISTA |
+| titulo | VARCHAR(200) | NOT NULL |
+| duracion_seg | INT | NOT NULL |
+| numero_pista | INT | NOT NULL |
+| letra | LONGTEXT | NULL |
+| explicit | TINYINT(1) | DEFAULT 0 |
+| reproducciones | BIGINT | DEFAULT 0 |
+
+---
+
+**6. PLAYLIST**
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| playlist_id | INT | PK, AUTO_INCREMENT |
+| usuario_id | INT | FK → USUARIO |
+| nombre | VARCHAR(150) | NOT NULL |
+| descripcion | TEXT | NULL |
+| es_publica | TINYINT(1) | DEFAULT 0 |
+| fecha_creacion | DATETIME | DEFAULT NOW() |
+| portada_url | VARCHAR(255) | NULL |
+
+---
+
+**7. PLAYLIST_CANCION** *(tabla intermedia)*
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| playlist_id | INT | PK, FK → PLAYLIST |
+| cancion_id | INT | PK, FK → CANCION |
+| posicion | INT | NOT NULL |
+| fecha_agregada | DATETIME | DEFAULT NOW() |
+
+---
+
+**8. REPRODUCCION**
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| reproduccion_id | BIGINT | PK, AUTO_INCREMENT |
+| usuario_id | INT | FK → USUARIO |
+| cancion_id | INT | FK → CANCION |
+| fecha_hora | DATETIME | DEFAULT NOW() |
+| duracion_escuchada_seg | INT | NOT NULL |
+| dispositivo | VARCHAR(80) | NULL |
+| completada | TINYINT(1) | DEFAULT 0 |
+
+---
+
+**9. GENERO_MUSICAL**
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| genero_id | INT | PK, AUTO_INCREMENT |
+| nombre | VARCHAR(80) | UNIQUE, NOT NULL |
+| descripcion | TEXT | NULL |
+| genero_padre_id | INT | FK → GENERO_MUSICAL (autorreferencia) |
+
+---
+
+**10. DISPOSITIVO**
+
+| Atributo | Tipo | Restricción |
+|---|---|---|
+| dispositivo_id | INT | PK, AUTO_INCREMENT |
+| usuario_id | INT | FK → USUARIO |
+| tipo | ENUM('iPhone','iPad','Mac','Apple TV','HomePod','Windows','Android') | NOT NULL |
+| nombre_dispositivo | VARCHAR(100) | NOT NULL |
+| sistema_operativo | VARCHAR(80) | NULL |
+| ultimo_acceso | DATETIME | NULL |
+| activo | TINYINT(1) | DEFAULT 1 |
+
+---
+
+Ahora genero el script SQL:---
+
+## ✅ Script generado: `bdapplemusic.sql`
+
+El script incluye las **10 entidades** con todas sus relaciones, más extras de valor:
+
+### 📦 Contenido del script
+
+| Sección | Detalle |
+|---|---|
+| **Base de datos** | `CREATE DATABASE bdapplemusic` con charset `utf8mb4` |
+| **10 tablas** | Con PK, FK, tipos correctos y comentarios |
+| **Relaciones** | `ON DELETE CASCADE / RESTRICT / SET NULL` según la lógica del negocio |
+| **Índices** | 9 índices adicionales para optimizar consultas frecuentes |
+| **Datos de ejemplo** | Géneros, artistas, álbumes, canciones, usuarios, suscripciones, dispositivos, playlists y reproducciones |
+| **2 vistas** | `v_top_canciones` y `v_historial_usuario` para consultas rápidas |
+
+### 🔗 Diagrama de relaciones principales
+
+```
+GENERO_MUSICAL ←── ALBUM ──→ ARTISTA
+                     │
+                  CANCION ──────────────────┐
+                     │                      │
+              PLAYLIST_CANCION         REPRODUCCION
+                     │                      │
+                 PLAYLIST ──→ USUARIO ←── DISPOSITIVO
+                               │
+                           SUSCRIPCION
+```Aquí tienes el **Diagrama ERD completo** de las 10 entidades de Apple Music. Las relaciones representadas son:
 
 | Relación | Cardinalidad | Descripción |
 |---|---|---|
