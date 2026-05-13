@@ -1,196 +1,58 @@
-# Proyecto: Apple Music – Gestión de Base de Datos
+Primero te presento las entidades con sus atributos, luego genero el script SQL.
 
-**Administradora de datos:** Ximena
+🎵 Proyecto: Base de Datos Apple Music
+Entidades y Atributos
 
-Como administradora de datos del proyecto **Apple Music**, estas son las entidades principales necesarias para gestionar correctamente la plataforma de música, usuarios, playlists y suscripciones.
+1. USUARIO
+AtributoTipoRestricciónusuario_idINTPK, AUTO_INCREMENTnombreVARCHAR(100)NOT NULLapellidoVARCHAR(100)NOT NULLemailVARCHAR(150)UNIQUE, NOT NULLfecha_nacimientoDATENOT NULLpaisVARCHAR(60)NOT NULLfecha_registroDATETIMEDEFAULT NOW()
 
----
+2. SUSCRIPCION
+AtributoTipoRestricciónsuscripcion_idINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOtipo_planENUM('Individual','Familiar','Estudiante','Apple One')NOT NULLprecio_mensualDECIMAL(6,2)NOT NULLfecha_inicioDATENOT NULLfecha_finDATENULLestadoENUM('Activa','Cancelada','Suspendida')DEFAULT 'Activa'
 
-# Entidades principales del sistema Apple Music
+3. ARTISTA
+AtributoTipoRestricciónartista_idINTPK, AUTO_INCREMENTnombre_artisticoVARCHAR(150)NOT NULLnombre_realVARCHAR(150)NULLpais_origenVARCHAR(60)NOT NULLfecha_debutDATENULLbiografiaTEXTNULLimagen_urlVARCHAR(255)NULL
 
-## Dominio del usuario
+4. ALBUM
+AtributoTipoRestricciónalbum_idINTPK, AUTO_INCREMENTartista_idINTFK → ARTISTAtituloVARCHAR(200)NOT NULLfecha_lanzamientoDATENOT NULLgeneroVARCHAR(80)NOT NULLsello_discograficoVARCHAR(100)NULLportada_urlVARCHAR(255)NULLtotal_pistasINTDEFAULT 0
 
-* `USUARIO` — datos principales de los usuarios registrados.
-* `PERFIL` — información pública del perfil musical del usuario.
-* `SUSCRIPCION` — planes de pago del usuario.
-* `METODO_PAGO` — tarjetas o métodos registrados.
+5. CANCION
+AtributoTipoRestriccióncancion_idINTPK, AUTO_INCREMENTalbum_idINTFK → ALBUMartista_idINTFK → ARTISTAtituloVARCHAR(200)NOT NULLduracion_segINTNOT NULLnumero_pistaINTNOT NULLletraLONGTEXTNULLexplicitTINYINT(1)DEFAULT 0reproduccionesBIGINTDEFAULT 0
 
----
+6. PLAYLIST
+AtributoTipoRestricciónplaylist_idINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOnombreVARCHAR(150)NOT NULLdescripcionTEXTNULLes_publicaTINYINT(1)DEFAULT 0fecha_creacionDATETIMEDEFAULT NOW()portada_urlVARCHAR(255)NULL
 
-## Dominio musical
+7. PLAYLIST_CANCION (tabla intermedia)
+AtributoTipoRestricciónplaylist_idINTPK, FK → PLAYLISTcancion_idINTPK, FK → CANCIONposicionINTNOT NULLfecha_agregadaDATETIMEDEFAULT NOW()
 
-* `ARTISTA` — cantantes o grupos musicales.
-* `ALBUM` — álbumes publicados.
-* `CANCION` — canciones disponibles en la plataforma.
-* `GENERO` — clasificación musical.
+8. REPRODUCCION
+AtributoTipoRestricciónreproduccion_idBIGINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOcancion_idINTFK → CANCIONfecha_horaDATETIMEDEFAULT NOW()duracion_escuchada_segINTNOT NULLdispositivoVARCHAR(80)NULLcompletadaTINYINT(1)DEFAULT 0
 
----
+9. GENERO_MUSICAL
+AtributoTipoRestriccióngenero_idINTPK, AUTO_INCREMENTnombreVARCHAR(80)UNIQUE, NOT NULLdescripcionTEXTNULLgenero_padre_idINTFK → GENERO_MUSICAL (autorreferencia)
 
-## Dominio de interacción
+10. DISPOSITIVO
+AtributoTipoRestriccióndispositivo_idINTPK, AUTO_INCREMENTusuario_idINTFK → USUARIOtipoENUM('iPhone','iPad','Mac','Apple TV','HomePod','Windows','Android')NOT NULLnombre_dispositivoVARCHAR(100)NOT NULLsistema_operativoVARCHAR(80)NULLultimo_accesoDATETIMENULLactivoTINYINT(1)DEFAULT 1
 
-* `PLAYLIST` — listas creadas por usuarios.
-* `PLAYLIST_CANCION` — relación entre playlists y canciones.
-* `FAVORITO` — canciones favoritas del usuario.
-* `REPRODUCCION` — historial de canciones escuchadas.
+Ahora genero el script SQL:Archivo creado, leyó un archivoArchivo creado, leyó un archivo
+✅ Script generado: bdapplemusic.sql
+El script incluye las 10 entidades con todas sus relaciones, más extras de valor:
+📦 Contenido del script
+SecciónDetalleBase de datosCREATE DATABASE bdapplemusic con charset utf8mb410 tablasCon PK, FK, tipos correctos y comentariosRelacionesON DELETE CASCADE / RESTRICT / SET NULL según la lógica del negocioÍndices9 índices adicionales para optimizar consultas frecuentesDatos de ejemploGéneros, artistas, álbumes, canciones, usuarios, suscripciones, dispositivos, playlists y reproducciones2 vistasv_top_canciones y v_historial_usuario para consultas rápidas
 
----
 
-# Decisiones de diseño importantes
+Aquí tienes el **Diagrama ERD completo** de las 10 entidades de Apple Music. Las relaciones representadas son:
 
-* `duracion` se guarda en `CANCION` para conocer el tiempo exacto de reproducción.
-* `PLAYLIST_CANCION` funciona como tabla intermedia para permitir muchas canciones en muchas playlists.
-* `REPRODUCCION` almacena fecha y hora para estadísticas musicales.
-* `SUSCRIPCION` se separa de `USUARIO` para permitir cambios de plan sin afectar los datos personales.
-
----
-
-# Script SQL — bdamazon.sql adaptado a Apple Music
-
-```sql
-CREATE DATABASE apple_music_ximena;
-USE apple_music_ximena;
-
--- =========================================
--- TABLA: USUARIO
--- =========================================
-CREATE TABLE usuario (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
-    contraseña VARCHAR(100) NOT NULL,
-    fecha_registro DATE NOT NULL,
-    pais VARCHAR(50),
-    estado_cuenta VARCHAR(30) NOT NULL
-);
-
--- =========================================
--- TABLA: PERFIL
--- =========================================
-CREATE TABLE perfil (
-    id_perfil INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    foto VARCHAR(255),
-    biografia TEXT,
-    genero_favorito VARCHAR(50),
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-);
-
--- =========================================
--- TABLA: SUSCRIPCION
--- =========================================
-CREATE TABLE suscripcion (
-    id_suscripcion INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    tipo_plan VARCHAR(50) NOT NULL,
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE,
-    estado VARCHAR(30) NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-);
-
--- =========================================
--- TABLA: METODO_PAGO
--- =========================================
-CREATE TABLE metodo_pago (
-    id_metodo INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    tipo_tarjeta VARCHAR(50),
-    numero_tarjeta VARCHAR(20),
-    fecha_expiracion DATE,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-);
-
--- =========================================
--- TABLA: ARTISTA
--- =========================================
-CREATE TABLE artista (
-    id_artista INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_artistico VARCHAR(100) NOT NULL,
-    pais VARCHAR(50),
-    fecha_debut DATE
-);
-
--- =========================================
--- TABLA: GENERO
--- =========================================
-CREATE TABLE genero (
-    id_genero INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_genero VARCHAR(50) NOT NULL
-);
-
--- =========================================
--- TABLA: ALBUM
--- =========================================
-CREATE TABLE album (
-    id_album INT AUTO_INCREMENT PRIMARY KEY,
-    id_artista INT NOT NULL,
-    titulo VARCHAR(100) NOT NULL,
-    fecha_lanzamiento DATE,
-    portada VARCHAR(255),
-    FOREIGN KEY (id_artista) REFERENCES artista(id_artista)
-);
-
--- =========================================
--- TABLA: CANCION
--- =========================================
-CREATE TABLE cancion (
-    id_cancion INT AUTO_INCREMENT PRIMARY KEY,
-    id_album INT NOT NULL,
-    id_genero INT NOT NULL,
-    titulo VARCHAR(100) NOT NULL,
-    duracion TIME NOT NULL,
-    reproducciones INT DEFAULT 0,
-    FOREIGN KEY (id_album) REFERENCES album(id_album),
-    FOREIGN KEY (id_genero) REFERENCES genero(id_genero)
-);
-
--- =========================================
--- TABLA: PLAYLIST
--- =========================================
-CREATE TABLE playlist (
-    id_playlist INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    fecha_creacion DATE,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-);
-
--- =========================================
--- TABLA: PLAYLIST_CANCION
--- =========================================
-CREATE TABLE playlist_cancion (
-    id_playlist INT NOT NULL,
-    id_cancion INT NOT NULL,
-    PRIMARY KEY (id_playlist, id_cancion),
-    FOREIGN KEY (id_playlist) REFERENCES playlist(id_playlist),
-    FOREIGN KEY (id_cancion) REFERENCES cancion(id_cancion)
-);
-
--- =========================================
--- TABLA: FAVORITO
--- =========================================
-CREATE TABLE favorito (
-    id_favorito INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_cancion INT NOT NULL,
-    fecha_agregado DATE,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_cancion) REFERENCES cancion(id_cancion)
-);
-
--- =========================================
--- TABLA: REPRODUCCION
--- =========================================
-CREATE TABLE reproduccion (
-    id_reproduccion INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_cancion INT NOT NULL,
-    fecha_reproduccion DATETIME NOT NULL,
-    dispositivo VARCHAR(50),
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_cancion) REFERENCES cancion(id_cancion)
-);
-```
-
-Con estas 12 entidades ya tienes una base de datos bastante completa para un proyecto tipo Apple Music, incluyendo usuarios, canciones, playlists, favoritos y suscripciones.
+| Relación | Cardinalidad | Descripción |
+|---|---|---|
+| USUARIO → SUSCRIPCION | 1 a muchos | Un usuario puede tener varias suscripciones históricas |
+| USUARIO → DISPOSITIVO | 1 a muchos | Un usuario vincula varios dispositivos |
+| USUARIO → PLAYLIST | 1 a muchos | Un usuario crea varias playlists |
+| USUARIO → REPRODUCCION | 1 a muchos | El historial de escucha por usuario |
+| ARTISTA → ALBUM | 1 a muchos | Un artista publica varios álbumes |
+| ARTISTA → CANCION | 1 a muchos | Un artista interpreta varias canciones |
+| ALBUM → CANCION | 1 a muchos | Un álbum contiene varias canciones |
+| GENERO_MUSICAL → ALBUM | 1 a muchos | Un género clasifica varios álbumes |
+| GENERO_MUSICAL → GENERO_MUSICAL | autorreferencia | Sub-géneros dentro de géneros padre |
+| PLAYLIST ↔ CANCION | muchos a muchos | A través de PLAYLIST_CANCION |
+| CANCION → REPRODUCCION | 1 a muchos | Registro de cada vez que se escucha |
+| DISPOSITIVO → REPRODUCCION | 1 a muchos | Desde qué dispositivo se reprodujo |
