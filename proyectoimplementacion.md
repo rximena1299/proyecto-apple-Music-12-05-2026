@@ -1,184 +1,189 @@
-# 📱 Plan de Implementación: Aplicación "Amazon Compras"
-
-> 📌 **Nota preliminar:** Este documento es un **plan estratégico y procedimental**. No contiene fragmentos de código. Está diseñado para guiar el desarrollo de forma estructurada, escalable y alineada con las prácticas actuales de Flutter + Firebase (2024-2026).
-
----
-
-## 🛠️ 1. Herramientas y Entorno de Desarrollo
-
-| Categoría | Herramienta | Propósito |
-|-----------|-------------|-----------|
-| **IDE Principal** | Visual Studio Code | Desarrollo rápido, extensiones oficiales de Flutter/Dart |
-| **IDE Nativo (opcional)** | Android Studio / Xcode | Emuladores, firma de apps, depuración nativa |
-| **SDKs** | Flutter (canal estable) + Dart | Base del framework multiplataforma |
-| **Control de Versiones** | Git + GitHub/GitLab | Historial, colaboración, CI/CD |
-| **Firebase** | Firebase Console + Firebase CLI | Backend, autenticación, base de datos, despliegue |
-| **Diseño UI/UX** | Figma / Penpot | Wireframes, prototipos, design system, handoff |
-| **Gestión de Assets** | SVG Repo, Flaticon, Unsplash | Iconografía, ilustraciones, imágenes de prueba |
-| **Pruebas** | Flutter DevTools, Postman/Insomnia (Firebase REST) | Depuración, monitoreo de rendimiento, validación de reglas |
+# 🎵 Plan de Implementación: "Apple Music Ximena"
+> ⚠️ **Nota:** Este documento contiene exclusivamente la planificación estratégica, arquitectura y procedimiento paso a paso. No incluye fragmentos de código, cumpliendo con tu solicitud previa al desarrollo.
 
 ---
 
-## 🎨 2. Diseño UI/UX
-
-### 🔹 Fases de Diseño
-1. **Investigación y Referencias:** Analizar flujos de Amazon, MercadoLibre y apps de e-commerce modernas.
-2. **Arquitectura de Información:** Mapa de pantallas (Onboarding → Login → Home → Catálogo → Detalle → Carrito → Checkout → Perfil).
-3. **Wireframes de Baja Fidelidad:** Definir disposición de elementos sin distracciones visuales.
-4. **Design System:**
-   - Paleta de colores (primario, secundario, estados, neutros)
-   - Tipografía (tamaños, pesos, jerarquía)
-   - Espaciado y grids (8pt base system)
-   - Componentes reutilizables: botones, cards, inputs, skeletons, snackbars
-5. **Prototipo Interactivo:** Validar navegación, transiciones y retroalimentación visual.
-6. **Handoff a Desarrollo:** Exportar assets, tokens de diseño, especificaciones de layout y accesibilidad.
-
-### 🔹 Principios UX Aplicados
-- **Ley de Fitts & Hick:** Minimizar clicks para acciones clave.
-- **Feedback Inmediato:** Indicadores de carga, validaciones en tiempo real, estados vacíos.
-- **Accesibilidad:** Contraste WCAG AA, soporte para screen readers, tamaños de fuente dinámicos.
-- **Responsive/Adaptativo:** Layouts que funcionen en móvil, tablet y escritorio (Flutter adaptive).
+## 1. 🛠️ Preparación del Entorno y Herramientas
+| Categoría | Herramienta / Configuración |
+|-----------|-----------------------------|
+| **SDK Principal** | Flutter SDK (última versión estable) + Dart SDK |
+| **IDE** | VS Code (recomendado) con extensiones: `Flutter`, `Dart`, `Firebase`, `Pubspec Assist`, `GitLens` |
+| **Backend / Cloud** | Firebase Console + Firebase CLI |
+| **Diseño UI/UX** | Figma o Adobe XD (para wireframes, prototipos y sistema de diseño) |
+| **Control de Versiones** | Git + repositorio remoto (GitHub/GitLab) |
+| **Emulación / Dispositivos** | Android Emulator, iOS Simulator, dispositivo físico para pruebas reales |
+| **Monitor de Rendimiento** | Flutter DevTools, Firebase Performance Monitoring |
 
 ---
 
-## 🔥 3. Configuración de Firebase
+## 2. 🎨 Diseño UI/UX
+### 2.1. Principios de Experiencia
+- **Estética:** Minimalismo premium, jerarquía visual clara, inspirado en Apple Music pero con identidad propia ("Ximena").
+- **Accesibilidad:** Soporte nativo de VoiceOver/TalkBack, contraste WCAG AA, tamaños de fuente dinámicos.
+- **Modos:** Tema claro/oscuro con transiciones suaves y persistencia de preferencia.
+- **Interacciones:** Gestos nativos (deslizar para saltar pista, mantener para opciones, arrastrar mini-reproductor).
 
-1. Crear proyecto en Firebase Console.
-2. Registrar aplicaciones: Android, iOS y Web.
-3. Configurar archivos de configuración nativos (`google-services.json`, `GoogleService-Info.plist`).
-4. Habilitar **Authentication** → Método: Email/Password.
-   - Activar verificación por correo (opcional pero recomendado).
-   - Configurar políticas de contraseña segura.
-5. Crear base de datos **Firestore** en modo producción.
-   - Definir colecciones principales: `users`, `products`, `categories`, `carts`, `orders`.
-   - Establecer reglas de seguridad iniciales (lectura pública para catálogo, escritura/lectura privada para datos de usuario).
-6. (Opcional) Configurar **Firebase Storage** para imágenes de productos y avatares.
-7. Instalar Firebase CLI y ejecutar comando de configuración automática para Flutter (`flutterfire configure`).
+### 2.2. Estructura de Pantallas
+1. **Splash / Onboarding** (logo, carga inicial, permisos opcionales)
+2. **Autenticación** (Login con email/contraseña, Registro, Recuperación, Validación en tiempo real)
+3. **Home / Descubrir** (carruseles, playlists destacadas, novedades, búsqueda)
+4. **Biblioteca** (canciones, álbumes, artistas, listas guardadas)
+5. **Reproductor** (pantalla completa, controles, cola de reproducción, letras sincronizadas si aplica)
+6. **Perfil / Configuración** (datos de cuenta, preferencias, suscripción, cierre de sesión)
 
----
-
-## 🏗️ 4. Arquitectura y Gestión de Estado
-
-- **Patrón recomendado:** MVVM simplificado o Clean Architecture ligera.
-- **Capas:**
-  - `UI`: Widgets, pantallas, componentes visuales.
-  - `Logic`: Providers, gestión de estado, orquestación de flujos.
-  - `Data`: Servicios de Firebase, modelos, mapeo DTO → Entity.
-  - `Core`: Utilidades, constantes, temas, enrutamiento.
-- **Gestión de Estado:** `provider` como estado global y local.
-  - `AuthProvider`: Sesión, datos de usuario, estado de autenticación.
-  - `CartProvider`: Artículos, totales, sincronización con Firestore.
-  - `CatalogProvider`: Listado, filtros, paginación, caché local.
-- **Navegación:** `go_router` o `Navigator 2.0` con protección de rutas (middleware de auth).
-- **Manejo de Errores:** Clases de error tipadas, mensajes traducidos, fallback UI.
+### 2.3. Sistema de Navegación
+- `BottomNavigationBar` para secciones principales
+- Navegación por rutas nombradas con transiciones coherentes
+- Mini-reproductor flotante persistente entre pantallas
 
 ---
 
-## 📦 5. Dependencias Clave (`pubspec.yaml`)
+## 3. 🧠 Arquitectura y Gestión de Estado (Provider)
+### 3.1. Patrón Recomendado
+- **MVVM simplificado** o **Capas por responsabilidad**
+- Separación clara: `Presentación (Widgets)` ↔ `Lógica (Providers)` ↔ `Datos (Repositorios/Firebase)`
 
-> ⚠️ Se listan los paquetes necesarios. Las versiones deben ser las **últimas estables compatibles con Flutter 3.x** al momento del desarrollo.
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  firebase_core: ^latest
-  firebase_auth: ^latest
-  cloud_firestore: ^latest
-  firebase_storage: ^latest  # si se usan imágenes externas
-  provider: ^latest
-  cached_network_image: ^latest
-  fluttertoast: ^latest
-  intl: ^latest
-  go_router: ^latest  # o auto_route
-  equatable: ^latest
-  uuid: ^latest
-  shared_preferences: ^latest  # para preferencias locales
-  image_picker: ^latest  # si se permite subir fotos
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^latest
-  build_runner: ^latest  # si se usa generación de código
-  mocktail: ^latest
+### 3.2. Estructura de Carpetas (Conceptual)
+```
+lib/
+ ├── main.dart
+ ├── core/           (constantes, temas, utilidades, rutas)
+ ├── features/       (módulos por pantalla/funcionalidad)
+ │    ├── auth/
+ │    ├── home/
+ │    ├── library/
+ │    ├── player/
+ │    └── profile/
+ ├── data/           (modelos, repositorios, servicios Firebase)
+ ├── providers/      (estado global, controladores Provider)
+ └── ui/             (widgets reutilizables, componentes base)
 ```
 
-> ✅ **Recomendación:** Ejecutar `flutter pub deps` tras la instalación para validar compatibilidad y evitar conflictos de versiones.
+### 3.3. Providers Estratégicos
+- `AuthProvider`: Estado de sesión, validación, flujo de login/logout
+- `MusicProvider`: Cola de reproducción, estado actual (play/pause, progreso, siguiente/anterior)
+- `LibraryProvider`: Sincronización de favoritos, playlists, historial
+- `ThemeProvider`: Modo claro/oscuro, preferencias locales
+- `LoadingErrorProvider`: Estados de carga y manejo global de errores
 
 ---
 
-## 📋 6. Procedimiento Paso a Paso (Fases de Desarrollo)
+## 4. 🔥 Configuración de Firebase y Estructura de Dependencias
+### 4.1. Configuración Firebase
+1. Crear proyecto en Firebase Console
+2. Registrar aplicaciones: Android, iOS y Web
+3. Descargar y ubicar archivos de configuración (`google-services.json`, `GoogleService-Info.plist`, `firebase-web-config`)
+4. Habilitar servicios:
+   - **Authentication** → Método Email/Password, verificación de email opcional
+   - **Firestore Database** → Modo prueba inicial, reglas de seguridad por usuario
+   - **Storage** (opcional) → Para portadas, assets o perfiles
+5. Configurar Firestore Collections/Documentos conceptuales:
+   - `users/{uid}` → perfil, preferencias, listas guardadas
+   - `tracks/{id}` → metadatos, URLs de audio, duración, artista, álbum
+   - `playlists/{id}` → propietario, lista de track IDs, visibilidad
+   - `user_activity/{uid}` → historial, favoritos, cola persistente
 
-### 🟢 Fase 1: Configuración Inicial del Proyecto
-- [ ] Crear proyecto Flutter con estructura de carpetas (`lib/`, `assets/`, `test/`).
-- [ ] Configurar `pubspec.yaml` con las dependencias listadas.
-- [ ] Configurar Firebase con CLI y generar archivos de configuración nativos.
-- [ ] Establecer `.gitignore` correcto y primer commit estructural.
-- [ ] Validar compilación en Android, iOS y Web.
+### 4.2. Estructura Conceptual de Dependencias (`pubspec.yaml`)
+| Categoría | Dependencias (nombres conceptuales) |
+|-----------|--------------------------------------|
+| **Firebase** | firebase_core, firebase_auth, cloud_firestore, firebase_storage |
+| **Estado** | provider (o flutter_riverpod si se prefiere, pero se mantiene provider según requerimiento) |
+| **UI/Assets** | cached_network_image, flutter_svg, google_fonts, lottie, shimmer |
+| **Audio/Media** | just_audio, audio_service (para reproducción en segundo plano y controles de sistema) |
+| **Utilidades** | intl (formatos), shared_preferences (cache local), path_provider, uuid, collection |
+| **Navegación** | go_router (o navigator 2.0 nativo) para rutas tipadas y deep linking |
+| **Desarrollo** | flutter_lints, build_runner, mockito, firebase_emulator (dev) |
 
-### 🟢 Fase 2: Esqueleto UI y Navegación Base
-- [ ] Implementar tema global (colores, tipografía, sombras, bordes).
-- [ ] Crear estructura de navegación con protección de rutas (rutas públicas vs privadas).
-- [ ] Desarrollar layout base: `Scaffold`, `AppBar`, `BottomNavigationBar`, `Drawer` (si aplica).
-- [ ] Implementar placeholders y estados de carga/esqueleto.
-- [ ] Validar responsive behavior en múltiples tamaños de pantalla.
-
-### 🟢 Fase 3: Autenticación (Email/Password)
-- [ ] Diseñar pantallas de Login y Registro con validaciones UX.
-- [ ] Implementar `AuthProvider` con `provider` para manejar sesión.
-- [ ] Conectar con Firebase Auth: creación de cuenta, inicio de sesión, cierre, recuperación de contraseña.
-- [ ] Persistir sesión y manejar reconexión automática al reiniciar la app.
-- [ ] Pruebas de flujo: credenciales inválidas, cuenta no verificada, errores de red.
-
-### 🟢 Fase 4: Integración con Firestore y Modelos de Datos
-- [ ] Definir clases de modelo para `User`, `Product`, `CartItem`, `Order`.
-- [ ] Crear servicios de acceso a Firestore (`FirestoreService`).
-- [ ] Implementar lectura de catálogo con paginación y filtros básicos.
-- [ ] Sincronizar datos del usuario autenticado con la colección `users`.
-- [ ] Configurar índices compuestos en Firestore para consultas optimizadas.
-
-### 🟢 Fase 5: Carrito de Compras y Estado Global
-- [ ] Implementar `CartProvider` con operaciones: agregar, eliminar, modificar cantidad, calcular total.
-- [ ] Persistir carrito localmente (`shared_preferences`) y sincronizar con Firestore al autenticarse.
-- [ ] Mostrar notificaciones visuales y actualización en tiempo real del badge del carrito.
-- [ ] Validar stock y disponibilidad antes de confirmar adición.
-
-### 🟢 Fase 6: Flujos Completos y Pulido UX
-- [ ] Conectar pantallas: Catálogo → Detalle → Carrito → Checkout → Confirmación.
-- [ ] Implementar búsqueda y filtros avanzados (categoría, precio, valoración).
-- [ ] Añadir animaciones de transición, microinteracciones y feedback háptico/visual.
-- [ ] Optimizar carga de imágenes (`cached_network_image`, placeholders, compresión).
-- [ ] Revisar accesibilidad y usabilidad con pruebas manuales y grabación de sesiones.
-
-### 🟢 Fase 7: Pruebas, Seguridad y Despliegue
-- [ ] Ejecutar pruebas unitarias (servicios, modelos, providers).
-- [ ] Ejecutar pruebas de widget (pantallas críticas, navegación, estados vacíos).
-- [ ] Refinar reglas de seguridad de Firestore y Storage.
-- [ ] Configurar variables de entorno y secretos (API keys, IDs de proyecto).
-- [ ] Generar builds firmados: APK/AAB (Android), IPA (iOS), Web deploy.
-- [ ] Subir a Firebase Hosting (Web), Play Console y App Store Connect.
-- [ ] Configurar monitoreo: Crashlytics, Performance Monitoring, Analytics.
+> ✅ Las versiones exactas se seleccionarán según compatibilidad estable con el SDK de Flutter al momento de la implementación.
 
 ---
 
-## ✅ 7. Recomendaciones Finales y Buenas Prácticas
+## 5. 📋 Procedimiento Paso a Paso de Desarrollo
 
-| Área | Práctica |
-|------|----------|
-| **Versionado** | Commits semánticos, ramas `feature/`, `hotfix/`, `release/` |
-| **Seguridad** | Nunca exponer keys en código, usar `.env` o configuración nativa segura |
-| **Rendimiento** | Lazy loading, paginación Firestore, `const` en widgets estáticos, evitar rebuilds innecesarios |
-| **Mantenibilidad** | Widgets extraídos en archivos, documentación inline, comentarios de contexto |
-| **Escalabilidad** | Preparar arquitectura para futuras integraciones (Stripe, push notifications, offline mode) |
-| **Calidad** | Linting estricto (`flutter analyze`), formateo automático (`flutter format`), CI/CD básico |
+### 🔹 Fase 1: Inicialización y Configuración Base
+1. Instalar y verificar Flutter/Dart en el sistema
+2. Crear proyecto Flutter con soporte multiplataforma
+3. Configurar VS Code con extensiones y formateo automático
+4. Inicializar repositorio Git y estructurar ramas (`main`, `dev`, `feature/*`)
+5. Configurar `pubspec.yaml` con las dependencias listadas en la sección 4.2
+
+### 🔹 Fase 2: Arquitectura y Rutas
+1. Definir estructura de carpetas según el modelo propuesto
+2. Implementar sistema de navegación centralizado
+3. Crear widgets base: `AppTheme`, `ScaffoldBase`, `LoadingWidget`, `ErrorBanner`
+4. Configurar tema global (colores, tipografía, elevaciones, border-radius)
+
+### 🔹 Fase 3: Integración Firebase y Autenticación
+1. Inicializar Firebase en `main.dart`
+2. Configurar `AuthProvider` con Provider
+3. Implementar formularios de Login/Registro con validación en tiempo real
+4. Conectar flujos con `firebase_auth` (crear cuenta, iniciar sesión, resetear contraseña, verificación)
+5. Gestionar redirección automática según estado de sesión (splash → auth → home)
+
+### 🔹 Fase 4: Estado Global con Provider
+1. Crear providers según el desglose de la sección 3.3
+2. Implementar `ChangeNotifier` o `Provider` con escucha selectiva para evitar rebuilds innecesarios
+3. Conectar `AuthProvider` con UI para mostrar/ocultar elementos según autenticación
+4. Preparar `LoadingErrorProvider` para manejo uniforme de excepciones
+
+### 🔹 Fase 5: Desarrollo UI/UX Pantalla por Pantalla
+1. **Splash/Onboarding:** Animación de carga, precarga de configuración
+2. **Auth:** Formularios accesibles, estados de validación, mensajes de error claros
+3. **Home:** Grids responsivos, carruseles horizontales, skeletons de carga, búsqueda predictiva
+4. **Biblioteca:** Listas paginadas, filtros, ordenamiento, swipe para acciones
+5. **Reproductor:** Controles táctiles, barra de progreso, mini-player persistente, soporte background
+6. **Perfil:** Edición de datos, toggle de tema, cierre de sesión, sincronización local
+
+### 🔹 Fase 6: Integración Firestore
+1. Crear servicios de repositorio (`AuthRepository`, `MusicRepository`, `UserRepository`)
+2. Implementar streams en tiempo real para listas y preferencias
+3. Configurar seguridad a nivel de documento (`request.auth.uid == resource.data.ownerId`)
+4. Implementar sincronización offline básica (habilitar caché local de Firestore)
+5. Conectar repositorios con los Providers correspondientes
+
+### 🔹 Fase 7: Lógica de Reproducción y Media
+1. Configurar motor de audio (`just_audio` + `audio_service`)
+2. Implementar cola de reproducción, shuffle, repeat, seek
+3. Habilitar controles desde notificaciones y pantalla bloqueada
+4. Sincronizar progreso con UI y Firestore (opcional: guardar última posición)
+
+### 🔹 Fase 8: Optimización y Refinamiento
+1. Revisar rebuilds innecesarios con Flutter DevTools
+2. Implementar lazy loading y paginación en listas largas
+3. Optimizar imágenes (webp, caching, tamaños responsivos)
+4. Añadir manejo de errores de red, reintentos automáticos y fallbacks UI
+5. Documentar flujos críticos y decisiones de arquitectura
 
 ---
 
-📌 **Próximo paso sugerido:** Una vez validado este plan, puedo generar:
-- Estructura de carpetas detallada
-- Flujos de estado para `provider` (diagramas o descripción textual)
-- Reglas de seguridad de Firestore específicas para e-commerce
-- Checklist de pruebas por fase
+## 6. 🧪 Validación, Pruebas y Despliegue
+### 6.1. Estrategia de Pruebas
+- **Unitarias:** Lógica de Providers, validaciones, transformaciones de datos
+- **Widget:** Renderizado de componentes, interacciones táctiles, estados de carga/error
+- **Integración:** Flujos completos (login → home → reproducción → biblioteca)
+- **Emuladores Firebase:** Simular Auth y Firestore sin consumo de cuota en desarrollo
 
-¿Deseas que profundice en alguna fase o que prepare el siguiente entregable sin código?
+### 6.2. Preparación para Producción
+1. Configurar reglas de seguridad de Firestore para producción
+2. Habilitar App Check (reCAPTCHA/Play Integrity) para proteger APIs
+3. Generar builds firmados: `APK/AAB` (Android), `IPA` (iOS), `Web` (optimizado)
+4. Configurar CI/CD básico (GitHub Actions o Codemagic) para automatización
+5. Preparar metadatos para tiendas: iconos, screenshots, descripción, categorías
+
+### 6.3. Lanzamiento y Mantenimiento
+- Despliegue escalonado (interno → beta → producción)
+- Monitoreo con Firebase Crashlytics y Performance Monitoring
+- Plan de retroalimentación de usuarios y actualizaciones iterativas
+
+---
+
+## ✅ Checklist de Validación Pre-Código
+- [ ] Entorno Flutter + Firebase verificado
+- [ ] Prototipo UI/UX aprobado en Figma/XD
+- [ ] Estructura de carpetas y rutas definidas
+- [ ] Dependencias alineadas con versión estable de Flutter
+- [ ] Auth y Firestore configurados en consola
+- [ ] Arquitectura Provider documentada y mapeada
+- [ ] Plan de pruebas y despliegue estructurado
+
+> 📌 **Siguiente paso:** Una vez valides este plan, podemos proceder a la generación de código por módulos (autenticación, providers, UI, Firestore, reproductor, etc.), siguiendo estrictamente esta arquitectura y sin desviaciones del flujo establecido. ¿Deseas ajustar algún alcance o confirmar para iniciar la fase de implementación?
