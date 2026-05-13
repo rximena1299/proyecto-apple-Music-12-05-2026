@@ -1,6 +1,5 @@
-Primero te presento las entidades con sus atributos, luego genero el script SQL.
+<img width="1440" height="1238" alt="image" src="https://github.com/user-attachments/assets/177330f7-a6ed-4841-9034-88fded1d30a5" />
 
----
 
 ## 🎵 Proyecto: Base de Datos Apple Music
 
